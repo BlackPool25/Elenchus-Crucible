@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+.omo/
+__pycache__/
+*.pyc
+*.pdf
+/tmp/

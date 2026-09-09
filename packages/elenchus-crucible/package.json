@@ -1,0 +1,46 @@
+{
+  "name": "elenchus-crucible",
+  "version": "1.0.0",
+  "description": "Elenchus & Crucible — Socratic problem discovery & architectural stress-testing engine for OpenCode and Oh My OpenAgent. Multi-agent research with Kitchenham-light SLRs, Search Inversion Matrix, ATAM quality scenarios, and 6-vector stress spikes.",
+  "keywords": [
+    "opencode",
+    "oh-my-openagent",
+    "architecture",
+    "system-design",
+    "multi-agent",
+    "elenchus",
+    "crucible",
+    "prebuild",
+    "stress-testing"
+  ],
+  "homepage": "https://github.com/BlackPool25/Elenchus-Crucible",
+  "license": "MIT",
+  "author": "BlackPool25",
+  "type": "module",
+  "bin": {
+    "elenchus-crucible": "bin/install.js",
+    "crucible-init": "bin/install.js",
+    "download-paper": "bin/download-paper.js"
+  },
+  "files": [
+    "bin/",
+    "commands/",
+    "skills/",
+    "scripts/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlackPool25/Elenchus-Crucible.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BlackPool25/Elenchus-Crucible/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "picocolors": "^1.1.1",
+    "boxen": "^8.0.1"
+  }
+}
