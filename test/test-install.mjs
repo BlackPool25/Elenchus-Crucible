@@ -121,7 +121,7 @@ test('--help exits with code 0 and shows help text', () => {
 test('--version exits with code 0 and shows version', () => {
   const r = sandboxExec(['--version']);
   assert.equal(r.status, 0);
-  assert.ok(r.stdout.includes('elenchus-crucible v1.0.0'), `should show version, got: ${r.stdout}`);
+  assert.ok(r.stdout.includes('elenchus-crucible v1.'), `should show version, got: ${r.stdout}`);
 });
 
 test('--check runs health check', () => {

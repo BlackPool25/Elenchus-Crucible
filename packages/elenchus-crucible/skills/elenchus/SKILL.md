@@ -103,14 +103,39 @@ Delegate surviving candidates to the `graveyard-worker` subagent:
 
 ---
 
-## 9. Phase 4 — Converge & Handoff to Crucible
+## 9. Phase 4 — Converge & Self-Contained Handoff (Interactive via `ask_question`)
 
 1. **Opportunity-Solution Tree:** Construct tree per surviving pick (Outcome $\to$ Opportunities $\to$ Solutions $\to$ **Killer Assumptions Named**).
-2. **Human Picks Max 3:** Present trade-offs against user's stated criteria; score transparently.
+2. **Interactive Candidate Selection via `ask_question`:**
+   Use the interactive multiple-choice tool (`ask_question`) to present the surviving candidates to the user with transparent trade-offs.
+   - List the recommended candidate first, prefixed with `(Recommended)`.
+   - Format each option as the user's direct selection statement.
 3. **Commitment Pre-Check:** Select cheapest proof (10 findable people, mock landing page, concierge, pilot, deposit).
 4. **Record Kills:** Document killed candidates and rationale in `DECISIONS.md`.
-5. **Phase Gate:** Update `BLACKBOARD.md` to phase `PLAN`, populate `HANDOFF` block (picks + POVs + killer assumptions + graveyard autopsies).
-6. **Close-out Line:** *"Elenchus discovery complete — invoke `crucible` to research, stress-spike, and architect."* Never write specs, RFCs, or code.
+5. **Generate Standalone Portable Handoff (`ELENCHUS_DISCOVERY.md`):**
+   Write a self-contained, portable discovery brief to `<workspace>/ELENCHUS_DISCOVERY.md` and display the demarcated handoff block:
+   ```markdown
+   <!-- ELENCHUS_HANDOFF_PAYLOAD_V1 -->
+   # Elenchus Problem Discovery Brief: [Idea Slug]
+   ## 1. Validated Problem Statement & Target Persona
+   ## 2. Solved-Shape Metrics & Non-Functional Constraints
+   ## 3. Killer Assumptions (To Be Spiked by Crucible)
+   ## 4. Graveyard Autopsy (Past Failures & 10x Shift Proof)
+   ## 5. Non-Negotiable Falsification / Kill Criteria
+   <!-- END_ELENCHUS_HANDOFF -->
+   ```
+6. **Cross-Session Decoupled Workflow Prompt via `ask_question`:**
+   Prompt the user on how they wish to proceed:
+   - `(Recommended) Save brief to ELENCHUS_DISCOVERY.md so I can open a fresh chat with Crucible`
+   - `Refine or adjust the problem framing before moving forward`
+   - `Archive this idea to the graveyard`
+7. **Clean Handoff Close-out (No Forced Thread Continuation):**
+   Explicitly instruct the user:
+   > *"Elenchus discovery complete! You do NOT need to continue in this thread. When you are ready to architect and stress-test, open a **brand new chat** and run:*"
+   > ```text
+   > /crucible ELENCHUS_DISCOVERY.md
+   > ```
+   > *(Crucible will automatically detect the Elenchus payload, bypass problem questioning, and jump straight into architectural stress-testing).*"
 
 ---
 

@@ -30,10 +30,20 @@ description: Socratic discovery & idea refutation engine. Elicits lived pain, ru
    Generates POV statements, full framing cards, and opportunity-solution trees.
 6. **Phase 3.5 (Graveyard Autopsy & "Why Now?" Test):**
    Delegates to `graveyard-worker` to research $\ge 2$ dead startups or abandoned OSS repos in the space, demanding proof of a $10\times$ shift in underlying constraints before approving an idea.
-7. **Phase 4 (Converge):**
-   Presents a ranked shortlist of 2–3 vetted ideas with commitment pre-checks and hands off to `/crucible`.
+7. **Phase 4 (Converge & Interactive Handoff via `ask_question`):**
+   - Presents surviving candidates with trade-offs using the interactive multiple-choice tool (`ask_question`).
+   - Exports the complete, self-contained `ELENCHUS_DISCOVERY.md` dossier containing the validated problem, killer assumptions, and graveyard lessons.
+
+## Decoupled Cross-Session Transition to Crucible
+You do NOT need to continue in the same chat session. When Elenchus finishes:
+1. It saves `<workspace>/ELENCHUS_DISCOVERY.md`.
+2. You can open a **brand new chat** anytime and run:
+   ```
+   /crucible ELENCHUS_DISCOVERY.md
+   ```
+   Crucible will immediately parse the brief, skip redundant questions, and jump straight into architectural stress testing.
 
 ## Execution Contract
 - First line output: `ELENCHUS MODE ENABLED!`
-- Never selects the winner by fiat — the human owns the pick.
+- Never selects the winner by fiat — the human owns the pick via `ask_question`.
 - Never writes specs, RFCs, or code — execution hands off to `/crucible`.

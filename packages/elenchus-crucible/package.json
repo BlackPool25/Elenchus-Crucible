@@ -1,7 +1,7 @@
 {
   "name": "elenchus-crucible",
-  "version": "1.0.0",
-  "description": "Elenchus & Crucible — Socratic problem discovery & architectural stress-testing engine for OpenCode and Oh My OpenAgent. Multi-agent research with Kitchenham-light SLRs, Search Inversion Matrix, ATAM quality scenarios, and 6-vector stress spikes.",
+  "version": "1.0.1",
+  "description": "Elenchus & Crucible \u2014 Socratic problem discovery & architectural stress-testing engine for OpenCode and Oh My OpenAgent. Multi-agent research with Kitchenham-light SLRs, Search Inversion Matrix, ATAM quality scenarios, and 6-vector stress spikes.",
   "keywords": [
     "opencode",
     "oh-my-openagent",
