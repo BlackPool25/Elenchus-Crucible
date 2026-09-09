@@ -9,7 +9,7 @@
  *
  * Configures:
  *   - OpenCode commands: /elenchus, /crucible
- *   - OpenCode skills: elenchus, crucible (+ convenience symlinks)
+ *   - OpenCode skills: elenchus, crucible
  *   - Context7 MCP (remote documentation lookup)
  *   - SearXNG MCP (academic and deep tech search)
  *   - oh-my-openagent (Sisyphus / multi-agent orchestration)
@@ -66,14 +66,7 @@ const COMMANDS = ['elenchus.md', 'crucible.md'];
 
 const SKILLS = ['elenchus', 'crucible'];
 
-const SKILL_ALIASES = [
-  { alias: 'discovering-before-building', target: 'elenchus' },
-  { alias: 'planning-before-building', target: 'crucible' },
-  { alias: 'prebuild-discovery', target: 'elenchus' },
-  { alias: 'prebuild-planning', target: 'crucible' },
-  { alias: 'prebuild-discover', target: 'elenchus' },
-  { alias: 'prebuild-plan', target: 'crucible' },
-];
+
 
 const PKG_VERSION = JSON.parse(
   fs.readFileSync(path.join(PKG_DIR, 'package.json'), 'utf-8'),
@@ -688,24 +681,26 @@ async function installSkills(forceOverwrite) {
     }
   }
 
-  // Create convenience symlinks
-  for (const { alias, target } of SKILL_ALIASES) {
-    const aliasPath = path.join(OPENCODE_SKILLS_DIR, alias);
-    const targetPath = path.join(OPENCODE_SKILLS_DIR, target);
-
-    try {
-      if (fs.existsSync(aliasPath)) {
-        fs.rmSync(aliasPath, { recursive: true, force: true });
-      }
-      fs.symlinkSync(target, aliasPath, 'dir');
-    } catch {
+  // Clean up any legacy or short aliases if present
+  const legacyAliases = [
+    'discovering-before-building',
+    'planning-before-building',
+    'prebuild-discovery',
+    'prebuild-planning',
+    'prebuild-discover',
+    'prebuild-plan',
+    'prebuild-architecture',
+  ];
+  for (const alias of legacyAliases) {
+    const p = path.join(OPENCODE_SKILLS_DIR, alias);
+    if (fs.existsSync(p)) {
       try {
-        fs.cpSync(targetPath, aliasPath, { recursive: true });
+        fs.rmSync(p, { recursive: true, force: true });
       } catch {}
     }
   }
 
-  s.stop(`Installed ${installed}/${SKILLS.length} skill(s) + aliases`);
+  s.stop(`Installed ${installed}/${SKILLS.length} skill(s) (elenchus, crucible)`);
   return installed;
 }
 

@@ -1,6 +1,6 @@
 # Shared Memory Architecture — Canonical Contract for Prebuild Skills
 
-**Authority rule:** This file is the single source of truth for cross-agent memory across `elenchus` and `crucible` (and their aliases). Nothing is duplicated. If this file and any SKILL.md disagree, this file wins.
+**Authority rule:** This file is the single source of truth for cross-agent memory across `elenchus` and `crucible`. Nothing is duplicated. If this file and any SKILL.md disagree, this file wins.
 **Canonical Path:** `~/.config/opencode/skills/elenchus/references/memory-architecture.md`
 
 ---

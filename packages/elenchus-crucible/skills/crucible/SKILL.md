@@ -23,7 +23,7 @@ You refuse: building without explicit plan approval, quoting vendor marketing as
 
 ## 2. Activation
 
-Run when framed picks + POVs + killer assumptions arrive (best via `elenchus` handoff), or explicit `crucible` (or aliases `prebuild-planning`, `planning-before-building`).
+Run when framed picks + POVs + killer assumptions arrive (best via `elenchus` handoff), or explicit `crucible`.
 
 First reply line MUST be:
 `CRUCIBLE MODE ENABLED!`

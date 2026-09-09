@@ -293,6 +293,39 @@ test('sandbox installation with --yes installs commands and skills', () => {
   const destSkillCrucible = path.join(SANDBOX_HOME, '.config/opencode/skills/crucible/SKILL.md');
   assert.ok(fs.existsSync(destSkillElenchus), 'elenchus skill was not installed in sandbox');
   assert.ok(fs.existsSync(destSkillCrucible), 'crucible skill was not installed in sandbox');
+
+  // Assert NO legacy or short aliases exist
+  const legacyAliases = [
+    'discovering-before-building',
+    'planning-before-building',
+    'prebuild-discovery',
+    'prebuild-planning',
+    'prebuild-discover',
+    'prebuild-plan',
+    'prebuild-architecture',
+  ];
+  for (const alias of legacyAliases) {
+    const aliasPath = path.join(SANDBOX_HOME, '.config/opencode/skills', alias);
+    assert.ok(!fs.existsSync(aliasPath), `legacy alias should not exist: ${alias}`);
+  }
+});
+
+test('installer removes pre-existing legacy aliases automatically', () => {
+  const skillsDir = path.join(SANDBOX_HOME, '.config/opencode/skills');
+  // Create dummy legacy alias symlinks/dirs
+  fs.mkdirSync(path.join(skillsDir, 'discovering-before-building'), { recursive: true });
+  fs.mkdirSync(path.join(skillsDir, 'planning-before-building'), { recursive: true });
+  assert.ok(fs.existsSync(path.join(skillsDir, 'discovering-before-building')));
+
+  // Run installer
+  const r = sandboxExec(['--yes']);
+  assert.equal(r.status, 0);
+
+  // Verify they got cleaned up
+  assert.ok(!fs.existsSync(path.join(skillsDir, 'discovering-before-building')), 'failed to clean up legacy alias');
+  assert.ok(!fs.existsSync(path.join(skillsDir, 'planning-before-building')), 'failed to clean up legacy alias');
+  assert.ok(fs.existsSync(path.join(skillsDir, 'elenchus/SKILL.md')));
+  assert.ok(fs.existsSync(path.join(skillsDir, 'crucible/SKILL.md')));
 });
 
 test('--check detects all installed components in sandbox', () => {
