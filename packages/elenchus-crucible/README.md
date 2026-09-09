@@ -28,6 +28,17 @@ npx elenchus-crucible --check
 - `/elenchus <idea>` — Socratic problem space discovery, idea refutation, and graveyard analysis.
 - `/crucible <spec>` — Architectural stress testing, ATAM quality scenarios, and 6-vector stress spikes.
 
+
+## Decoupled Cross-Session Workflow
+
+You can run `/elenchus` in one chat session, export `ELENCHUS_DISCOVERY.md`, and open a **fresh chat session** with:
+
+```text
+/crucible ELENCHUS_DISCOVERY.md
+```
+
+Crucible automatically ingests the validated problem, killer assumptions, and graveyard lessons, skipping redundant questions.
+
 ## Academic Paper Downloader
 
 ```bash

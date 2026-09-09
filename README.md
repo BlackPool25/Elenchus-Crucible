@@ -1,7 +1,7 @@
 # Elenchus & Crucible
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.0-cb3837.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.2-cb3837.svg" alt="npm"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://opencode.ai"><img src="https://img.shields.io/badge/OpenCode-Ready-black.svg" alt="OpenCode"></a>
   <a href="https://github.com/BlackPool25/OmniLearn"><img src="https://img.shields.io/badge/oMo-Sisyphus%20Orchestration-8A2BE2.svg" alt="oMo"></a>
@@ -96,6 +96,26 @@ Crucible spikes must break code boundaries, not confirm trivial success:
 | **4. Failure Injection** | Sudden socket drop, partial writes, corrupted frames | State desynchronization, unhandled panics |
 | **5. Dependency** | Downstream rate limits (429s), connection timeouts | Cascading failure, retry storms |
 | **6. Economic** | Memory footprint per connection, TTFT, token burn | Unbounded RAM growth, compute cost cliffs |
+
+---
+
+## Decoupled Cross-Session Workflow
+
+You do **NOT** need to keep your entire project in a single endless chat session. Elenchus and Crucible are completely decoupled:
+
+1. Run `/elenchus <idea>` in **Chat A**. It cross-examines the problem, performs graveyard analysis, and exports a clean `<workspace>/ELENCHUS_DISCOVERY.md`.
+2. Close Chat A or take a break.
+3. Open a **brand new Chat B** anytime and run:
+   ```text
+   /crucible ELENCHUS_DISCOVERY.md
+   ```
+4. Crucible immediately recognizes the Elenchus schema, **skips all problem elicitation**, and jumps directly into architectural modeling, ATAM quality scenarios, and 6-vector stress spikes.
+
+### Interactive Decision Modals (`ask_question`)
+Both skills use interactive multiple-choice modals for key decisions:
+- **Idea Convergence**: Select your winning candidate idea with clear trade-offs.
+- **Architectural Forks**: Choose between Option A, Option B, and Option C with explicit `(Recommended)` technical rationale.
+- **Phase 5 Plan Gate**: Interactively approve the final Prometheus work plan before execution.
 
 ---
 

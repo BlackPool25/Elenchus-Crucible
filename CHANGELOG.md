@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-09-09
+
+### Added
+- **Decoupled Cross-Session Workflow**:
+  - Standalone `ELENCHUS_DISCOVERY.md` export allowing users to complete problem discovery, close the chat, and open a brand-new chat session anytime.
+  - Automatic Elenchus brief recognition in `/crucible`: immediately extracts validated problem statements, killer assumptions, and graveyard lessons.
+  - Complete bypass of redundant problem-interview questions when an Elenchus brief is provided to Crucible.
+- **Interactive Multiple-Choice Tooling (`ask_question`)**:
+  - Embedded interactive decision modals for candidate idea selection in Elenchus.
+  - Interactive architectural tradeoff forks (Option A vs Option B vs Option C) in Crucible with explicit `(Recommended)` markers.
+  - Interactive plan approval gate at Phase 5 before handing off to execution.
+
+### Changed
+- Removed all legacy and short aliases (`discovering-before-building`, `planning-before-building`, `prebuild-discovery`, etc.) in favor of clean, authoritative `elenchus` and `crucible` branding.
+- Added automatic purge of any stale legacy aliases in `install.js`.
+
+---
+
 ## [1.0.0] - 2026-09-09
 
 ### Added
