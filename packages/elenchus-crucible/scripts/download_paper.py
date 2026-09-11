@@ -17,27 +17,33 @@ import subprocess
 import sys
 import urllib.request
 
-# Self-healing: if arxiv or pymupdf missing, attempt to re-exec via uv if available
-try:
-    import arxiv
-    import pymupdf  # fitz
-except ImportError:
-    uv_bin = shutil.which("uv") or os.path.expanduser("~/.local/bin/uv")
-    if os.path.exists(uv_bin) and not os.environ.get("_ELENCHUS_UV_REEXEC"):
-        os.environ["_ELENCHUS_UV_REEXEC"] = "1"
-        cmd = [uv_bin, "run", "--with", "arxiv", "--with", "pymupdf", sys.executable, __file__] + sys.argv[1:]
-        try:
-            res = subprocess.run(cmd)
-            sys.exit(res.returncode)
-        except Exception as e:
-            print(f"[!] Attempted re-exec via uv failed: {e}", file=sys.stderr)
-    print("[!] 'arxiv' or 'pymupdf' not installed.", file=sys.stderr)
-    print("    Install them via: uv pip install arxiv pymupdf (or pip install arxiv pymupdf)", file=sys.stderr)
-    sys.exit(1)
+# Self-healing: arxiv/pymupdf are only required for actual download/search work,
+# so --help stays offline-safe. Call ensure_deps() before any network action.
+def ensure_deps():
+    global arxiv, pymupdf
+    try:
+        import arxiv as _arxiv
+        import pymupdf as _pymupdf
+    except ImportError:
+        uv_bin = shutil.which("uv") or os.path.expanduser("~/.local/bin/uv")
+        if os.path.exists(uv_bin) and not os.environ.get("_ELENCHUS_UV_REEXEC"):
+            os.environ["_ELENCHUS_UV_REEXEC"] = "1"
+            cmd = [uv_bin, "run", "--with", "arxiv", "--with", "pymupdf", sys.executable, __file__] + sys.argv[1:]
+            try:
+                res = subprocess.run(cmd)
+                sys.exit(res.returncode)
+            except Exception as e:
+                print(f"[!] Attempted re-exec via uv failed: {e}", file=sys.stderr)
+        print("[!] 'arxiv' or 'pymupdf' not installed.", file=sys.stderr)
+        print("    Install them via: uv pip install arxiv pymupdf (or pip install arxiv pymupdf)", file=sys.stderr)
+        sys.exit(1)
+    else:
+        arxiv, pymupdf = _arxiv, _pymupdf
 
 
 def download_and_extract_paper(arxiv_id: str, output_path: str = None) -> str:
     """Download an arXiv paper by ID and extract its full text into markdown."""
+    ensure_deps()
     clean_id = arxiv_id.strip()
     if clean_id.startswith("http"):
         parts = clean_id.split("/")
@@ -103,6 +109,7 @@ def download_and_extract_paper(arxiv_id: str, output_path: str = None) -> str:
 
 def search_papers(query: str, max_results: int = 5):
     """Search arXiv for papers matching a query."""
+    ensure_deps()
     print(f"[*] Searching arXiv for: '{query}' (limit: {max_results})...")
     client = arxiv.Client()
     search = arxiv.Search(query=query, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance)

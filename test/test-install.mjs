@@ -62,8 +62,8 @@ function setupSandbox() {
     plugin: ['oh-my-openagent@beta'],
     mcp: {
       context7: {
-        type: 'remote',
-        url: 'https://mcp.context7.com/mcp',
+        type: 'local',
+        command: ['npx', '-y', '@upstash/context7-mcp'],
         enabled: true,
       },
       searxng: {
@@ -271,6 +271,9 @@ test('parseJSONC handles trailing commas', () => {
 });
 
 test('parseJSONC does NOT strip URLs containing //', () => {
+  // Fixture URL is arbitrary here: this asserts parser behavior on // inside
+  // string literals, not the installer shape (installer writes local stdio
+  // `npx -y @upstash/context7-mcp`; see sandbox mock above).
   const result = parseJSONC('{"url": "https://mcp.context7.com/mcp"}');
   assert.equal(result.url, 'https://mcp.context7.com/mcp');
 });

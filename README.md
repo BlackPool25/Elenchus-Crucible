@@ -1,7 +1,7 @@
 # Elenchus & Crucible
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.3-cb3837.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.4-cb3837.svg" alt="npm"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://opencode.ai"><img src="https://img.shields.io/badge/OpenCode-Ready-black.svg" alt="OpenCode"></a>
   <a href="https://github.com/BlackPool25/OmniLearn"><img src="https://img.shields.io/badge/oMo-Sisyphus%20Orchestration-8A2BE2.svg" alt="oMo"></a>

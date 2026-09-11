@@ -10,7 +10,7 @@
  * Configures:
  *   - OpenCode commands: /elenchus, /crucible
  *   - OpenCode skills: elenchus, crucible
- *   - Context7 MCP (remote documentation lookup)
+ *   - Context7 MCP (local docs lookup via @upstash/context7-mcp)
  *   - SearXNG MCP (academic and deep tech search)
  *   - oh-my-openagent (Sisyphus / multi-agent orchestration)
  *   - Python research toolchain (arxiv, pymupdf for paper extraction)

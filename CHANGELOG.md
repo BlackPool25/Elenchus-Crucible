@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.4] - 2026-09-11
+
+### Fixed
+- **`download-paper --help` no longer requires runtime deps**: `arxiv`/`pymupdf` are now lazy-loaded via `ensure_deps()` only before actual download/search work, so `--help` (and bare invocation) work offline on a fresh machine. Previously the module-level import guard exited 1 before argparse ever ran, failing the `download_paper.py --help` installer test wherever `arxiv` was not yet installed.
+- **Installer header comment**: corrected stale "remote documentation lookup" wording to the local-stdio truth (`@upstash/context7-mcp`).
+
+### Changed
+- **Test suite matches installer reality**: sandbox mock `opencode.json` now seeds Context7 in the local-stdio shape the installer actually writes (`type: local`, `command: npx -y @upstash/context7-mcp`); the JSONC `//`-in-string fixture keeps its arbitrary URL with a comment documenting it asserts parser behavior, not installer shape.
+
+---
+
 ## [1.0.3] - 2026-09-11
 
 ### Fixed
