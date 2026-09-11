@@ -116,6 +116,7 @@ test('--help exits with code 0 and shows help text', () => {
   assert.ok(r.stdout.includes('npx elenchus-crucible'), 'should show npx command');
   assert.ok(r.stdout.includes('/elenchus'), 'should mention /elenchus');
   assert.ok(r.stdout.includes('/crucible'), 'should mention /crucible');
+  assert.ok(r.stdout.includes('/kanon'), 'should mention /kanon');
 });
 
 test('--version exits with code 0 and shows version', () => {
@@ -141,9 +142,9 @@ test('unknown flag does not crash', () => {
 // ============================================================
 console.log('\n📋 Command & Skills Files Tests');
 
-const EXPECTED_COMMANDS = ['elenchus.md', 'crucible.md'];
+const EXPECTED_COMMANDS = ['elenchus.md', 'crucible.md', 'kanon.md'];
 
-test('all 2 command files exist', () => {
+test('all 3 command files exist', () => {
   for (const cmd of EXPECTED_COMMANDS) {
     const p = path.join(COMMANDS_DIR, cmd);
     assert.ok(fs.existsSync(p), `missing command: ${cmd}`);
@@ -151,16 +152,21 @@ test('all 2 command files exist', () => {
 });
 
 test('each command file has description frontmatter', () => {
-  for (const cmd of EXPECTED_COMMANDS) {
+  for (const cmd of ['elenchus.md', 'crucible.md']) {
     const content = fs.readFileSync(path.join(COMMANDS_DIR, cmd), 'utf-8');
     assert.ok(content.includes('description:'), `${cmd} missing description frontmatter`);
     assert.ok(content.startsWith('---'), `${cmd} should start with ---`);
   }
+  // kanon.md ships byte-identical to its source: KANON MODE header, no frontmatter
+  const kanon = fs.readFileSync(path.join(COMMANDS_DIR, 'kanon.md'), 'utf-8');
+  assert.ok(kanon.startsWith('KANON MODE ENABLED!'), 'kanon.md should start with KANON MODE ENABLED!');
+  assert.ok(kanon.includes('# /kanon'), 'kanon.md should contain the /kanon title');
 });
 
-test('skill files and references exist for elenchus and crucible', () => {
+test('skill files and references exist for elenchus, crucible and kanon', () => {
   assert.ok(fs.existsSync(path.join(SKILLS_DIR, 'elenchus/SKILL.md')), 'elenchus SKILL.md missing');
   assert.ok(fs.existsSync(path.join(SKILLS_DIR, 'crucible/SKILL.md')), 'crucible SKILL.md missing');
+  assert.ok(fs.existsSync(path.join(SKILLS_DIR, 'kanon/SKILL.md')), 'kanon SKILL.md missing');
 
   const elenchusRefs = ['framing-templates.md', 'ideation-methods.md', 'memory-architecture.md'];
   for (const ref of elenchusRefs) {
@@ -179,6 +185,37 @@ test('skill files and references exist for elenchus and crucible', () => {
     const refPath = path.join(SKILLS_DIR, 'crucible/references', ref);
     assert.ok(fs.existsSync(refPath), `crucible reference missing: ${ref}`);
   }
+
+  const kanonRefs = [
+    'intake-contract.md',
+    'srs-template.md',
+    'sdd-template.md',
+    'test-plan-template.md',
+    'charter-template.md',
+    'registers-template.md',
+    'carry-through-template.md',
+    'sprint-pack-template.md',
+    'mcp-export-contract.md',
+  ];
+  for (const ref of kanonRefs) {
+    const refPath = path.join(SKILLS_DIR, 'kanon/references', ref);
+    assert.ok(fs.existsSync(refPath), `kanon reference missing: ${ref}`);
+  }
+});
+
+test('kanon skill mirrors the frozen source (name + exactly 9 references)', () => {
+  const skill = fs.readFileSync(path.join(SKILLS_DIR, 'kanon/SKILL.md'), 'utf-8');
+  assert.ok(skill.includes('name: kanon'), 'kanon SKILL.md must declare name: kanon');
+  const refs = fs.readdirSync(path.join(SKILLS_DIR, 'kanon/references'));
+  assert.equal(refs.length, 9, `kanon must ship exactly 9 references, found ${refs.length}`);
+});
+
+test('install.js enumerates all 3 skills and commands', () => {
+  const content = fs.readFileSync(INSTALL_JS, 'utf-8');
+  const skills = content.match(/const SKILLS = \[([^\]]*)\]/);
+  assert.ok(skills && skills[1].includes("'kanon'"), 'SKILLS array must include kanon');
+  const commands = content.match(/const COMMANDS = \[([^\]]*)\]/);
+  assert.ok(commands && commands[1].includes("'kanon.md'"), 'COMMANDS array must include kanon.md');
 });
 
 // ============================================================
@@ -289,13 +326,17 @@ test('sandbox installation with --yes installs commands and skills', () => {
 
   const destCommandElenchus = path.join(SANDBOX_HOME, '.config/opencode/command/elenchus.md');
   const destCommandCrucible = path.join(SANDBOX_HOME, '.config/opencode/command/crucible.md');
+  const destCommandKanon = path.join(SANDBOX_HOME, '.config/opencode/command/kanon.md');
   assert.ok(fs.existsSync(destCommandElenchus), 'elenchus.md was not installed in sandbox');
   assert.ok(fs.existsSync(destCommandCrucible), 'crucible.md was not installed in sandbox');
+  assert.ok(fs.existsSync(destCommandKanon), 'kanon.md was not installed in sandbox');
 
   const destSkillElenchus = path.join(SANDBOX_HOME, '.config/opencode/skills/elenchus/SKILL.md');
   const destSkillCrucible = path.join(SANDBOX_HOME, '.config/opencode/skills/crucible/SKILL.md');
+  const destSkillKanon = path.join(SANDBOX_HOME, '.config/opencode/skills/kanon/SKILL.md');
   assert.ok(fs.existsSync(destSkillElenchus), 'elenchus skill was not installed in sandbox');
   assert.ok(fs.existsSync(destSkillCrucible), 'crucible skill was not installed in sandbox');
+  assert.ok(fs.existsSync(destSkillKanon), 'kanon skill was not installed in sandbox');
 
   // Assert NO legacy or short aliases exist
   const legacyAliases = [
@@ -329,12 +370,13 @@ test('installer removes pre-existing legacy aliases automatically', () => {
   assert.ok(!fs.existsSync(path.join(skillsDir, 'planning-before-building')), 'failed to clean up legacy alias');
   assert.ok(fs.existsSync(path.join(skillsDir, 'elenchus/SKILL.md')));
   assert.ok(fs.existsSync(path.join(skillsDir, 'crucible/SKILL.md')));
+  assert.ok(fs.existsSync(path.join(skillsDir, 'kanon/SKILL.md')));
 });
 
 test('--check detects all installed components in sandbox', () => {
   const r = sandboxExec(['--check']);
   assert.equal(r.status, 0);
-  assert.ok(r.stdout.includes('All 2 commands installed'), 'should verify commands installed');
+  assert.ok(r.stdout.includes('All 3 commands installed'), 'should verify commands installed');
   assert.ok(r.stdout.includes('All skills installed'), 'should verify skills installed');
 });
 

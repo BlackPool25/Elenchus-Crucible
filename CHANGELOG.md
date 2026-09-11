@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-09-11
+
+### Added
+- **Kanon Pre-Project + Sprint Documentation Standard (`/kanon`)**:
+  - Third skill shipping alongside elenchus + crucible: turns a tightened Elenchus V1 brief plus Crucible PR/FAQ+RFC+ADRs into strict-IEEE SRS (29148), SDD (1016), test plan (829), charter + stakeholder/risk registers (PMBOK), PR/FAQ+RFC+ADR carry-through, a sprint-planning pack, and a generic future-MCP export.
+  - Ships `skills/kanon/` (SKILL.md + 9 references templates) and `commands/kanon.md`, byte-identical to the reviewed kanon source; installer (`COMMANDS`/`SKILLS` lists, help, workspace modules) and test suite cover all three skills.
+  - Usage: `/kanon ELENCHUS_DISCOVERY.md` in a fresh chat. Never live-writes to any MCP/Jira.
+
+---
+
 ## [1.0.4] - 2026-09-11
 
 ### Fixed

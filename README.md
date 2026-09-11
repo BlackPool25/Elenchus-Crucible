@@ -1,7 +1,7 @@
 # Elenchus & Crucible
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.4-cb3837.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.1.0-cb3837.svg" alt="npm"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://opencode.ai"><img src="https://img.shields.io/badge/OpenCode-Ready-black.svg" alt="OpenCode"></a>
   <a href="https://github.com/BlackPool25/OmniLearn"><img src="https://img.shields.io/badge/oMo-Sisyphus%20Orchestration-8A2BE2.svg" alt="oMo"></a>
@@ -23,6 +23,7 @@ Then in OpenCode:
 ```
 /elenchus I want to build a distributed append-only ledger for IoT
 /crucible Implement LSM-tree storage engine with io_uring on Linux
+/kanon ELENCHUS_DISCOVERY.md
 ```
 
 ---
@@ -47,6 +48,7 @@ Elenchus & Crucible replace superficial planning with rigorous empirical pre-bui
 |---|---|---|
 | `/elenchus <idea>` | **Problem Space** | Socratic cross-examination, 5-whys root cause inversion, prior art graveyard sweep, and go/no-go falsification contract |
 | `/crucible <spec>` | **Solution Space** | Pre-build technical feasibility matrix, ATAM quality attribute trees, 6-vector stress spikes, and Gary Klein pre-mortems |
+| `/kanon <brief>` | **Documentation** | Strict-IEEE pre-project + sprint-planning docs from Elenchus V1 + Crucible outputs, generic MCP export |
 | `download-paper <id>` | **CLI Utility** | Download academic papers from arXiv and extract full text into clean, structured Markdown |
 | `download-paper -s <q>` | **CLI Utility** | Search arXiv preprints directly from terminal |
 
@@ -110,6 +112,7 @@ You do **NOT** need to keep your entire project in a single endless chat session
    /crucible ELENCHUS_DISCOVERY.md
    ```
 4. Crucible immediately recognizes the Elenchus schema, **skips all problem elicitation**, and jumps directly into architectural modeling, ATAM quality scenarios, and 6-vector stress spikes.
+5. Run `/kanon ELENCHUS_DISCOVERY.md` in a fresh chat anytime to codify the validated problem + Crucible outputs into strict-IEEE SRS/SDD/test-plan, charter + registers, sprint pack, and a generic MCP export.
 
 ### Interactive Decision Modals (`ask_question`)
 Both skills use interactive multiple-choice modals for key decisions:
@@ -182,7 +185,7 @@ Elenchus-Crucible/
         ├── bin/
         │   ├── install.js       # npx CLI installer
         │   └── download-paper.js# CLI wrapper for arXiv paper ingestion
-        ├── commands/            # OpenCode global commands (/elenchus, /crucible)
+        ├── commands/            # OpenCode global commands (/elenchus, /crucible, /kanon)
         ├── skills/              # Specialized skills & deep references
         └── scripts/
             └── download_paper.py# Python paper retrieval & PyMuPDF extraction

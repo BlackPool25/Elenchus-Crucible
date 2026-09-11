@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
 /**
- * Elenchus & Crucible Installer
+ * Elenchus, Crucible & Kanon Installer
  *
- * Installs Elenchus (Socratic Problem Discovery & Idea Refutation) and
- * Crucible (Architectural Stress-Testing & Pre-Build Engine)
+ * Installs Elenchus (Socratic Problem Discovery & Idea Refutation),
+ * Crucible (Architectural Stress-Testing & Pre-Build Engine), and
+ * Kanon (Pre-Project + Sprint Documentation Standard)
  * commands and skills into OpenCode (~/.config/opencode/).
  *
  * Configures:
- *   - OpenCode commands: /elenchus, /crucible
- *   - OpenCode skills: elenchus, crucible
+ *   - OpenCode commands: /elenchus, /crucible, /kanon
+ *   - OpenCode skills: elenchus, crucible, kanon
  *   - Context7 MCP (local docs lookup via @upstash/context7-mcp)
  *   - SearXNG MCP (academic and deep tech search)
  *   - oh-my-openagent (Sisyphus / multi-agent orchestration)
@@ -62,9 +63,9 @@ const OPENCODE_CONFIG_PATH = path.join(OPENCODE_CONFIG_DIR, 'opencode.json');
 const OPENCODE_CONFIGC_PATH = path.join(OPENCODE_CONFIG_DIR, 'opencode.jsonc');
 const CRUCIBLE_CONFIG_PATH = path.join(OPENCODE_CONFIG_DIR, 'crucible.json');
 
-const COMMANDS = ['elenchus.md', 'crucible.md'];
+const COMMANDS = ['elenchus.md', 'crucible.md', 'kanon.md'];
 
-const SKILLS = ['elenchus', 'crucible'];
+const SKILLS = ['elenchus', 'crucible', 'kanon'];
 
 
 
@@ -200,7 +201,7 @@ function printHelp() {
       `  3. Configures SearXNG MCP (academic and deep tech search)`,
       `  4. Ensures oh-my-openagent is installed (asks first if any install exists — never overwrites a beta with stable; --yes keeps existing untouched)`,
       `  5. Verifies Python 3 research tools (arxiv, pymupdf for paper extraction)`,
-      `  6. Copies commands to ~/.config/opencode/command/ (/elenchus, /crucible)`,
+      `  6. Copies commands to ~/.config/opencode/command/ (/elenchus, /crucible, /kanon)`,
       `  7. Installs skills and references to ~/.config/opencode/skills/`,
       `  8. Configures research workspace directory (~/.config/opencode/crucible.json)`,
       '',
@@ -208,6 +209,7 @@ function printHelp() {
       `  In OpenCode run:`,
       `    ${pc.cyan('/elenchus')} <idea>  ${pc.dim('— Socratic problem discovery & idea refutation')}`,
       `    ${pc.cyan('/crucible')} <spec>  ${pc.dim('— Architectural stress-testing & pre-build engine')}`,
+`    ${pc.cyan('/kanon')} <brief>  ${pc.dim('— Pre-project + sprint documentation standard')}`,
       `  Or extract academic papers:`,
       `    ${pc.cyan('download-paper')} <arxiv-id>  ${pc.dim('— Download & convert arXiv paper to Markdown')}`,
     ].join('\n'),
@@ -795,7 +797,7 @@ async function installSkills(forceOverwrite) {
     }
   }
 
-  s.stop(`Installed ${installed}/${SKILLS.length} skill(s) (elenchus, crucible)`);
+  s.stop(`Installed ${installed}/${SKILLS.length} skill(s) (elenchus, crucible, kanon)`);
   return installed;
 }
 
@@ -835,7 +837,7 @@ async function configureWorkspaceDir() {
     workspaceDirectory: workspaceDir,
     setupDate: new Date().toISOString().slice(0, 10),
     version: PKG_VERSION,
-    modules: ['elenchus', 'crucible'],
+    modules: ['elenchus', 'crucible', 'kanon'],
   };
 
   const s = createSpinner();
@@ -1007,7 +1009,7 @@ async function install(autoYes = false) {
   await ensurePythonTools(autoYes);
 
   // ── Step 6: Commands ──
-  log.step('6/8  Installing OpenCode commands (/elenchus, /crucible)');
+  log.step('6/8  Installing OpenCode commands (/elenchus, /crucible, /kanon)');
   await copyCommandFiles(autoYes);
 
   // ── Step 7: Skills ──
@@ -1030,6 +1032,7 @@ async function install(autoYes = false) {
     `${pc.bold('Commands available in OpenCode:')}`,
     `  ${pc.cyan('/elenchus')} <idea>   ${pc.dim('— Socratic problem discovery & idea refutation')}`,
     `  ${pc.cyan('/crucible')} <spec>   ${pc.dim('— Architectural stress-testing & pre-build engine')}`,
+    `  ${pc.cyan('/kanon')} <brief>  ${pc.dim('— Pre-project + sprint documentation standard')}`,
     '',
     `${pc.bold('CLI utilities:')}`,
     `  ${pc.cyan('download-paper')} <id> ${pc.dim('— Download arXiv paper and convert to Markdown')}`,

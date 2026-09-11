@@ -32,7 +32,7 @@ Other flags: `--help` (full install-flow overview), `--version`.
 3. Configures **SearXNG MCP** for academic and deep technical searches (defaults to `http://localhost:8080`; you can enter your own URL when prompted).
 4. Ensures **oh-my-openagent** is registered for Sisyphus multi-agent orchestration — **ask-first**: if any existing install is detected (stable or beta plugin entry, or the `omo` binary), the installer reports the version/channel found and asks whether to keep it, reinstall stable (`oh-my-openagent@latest`), install beta (`oh-my-openagent@beta`), or skip. It never overwrites a beta install with stable. Under `--yes`, an existing install is kept untouched; only fresh installs default to stable.
 5. Verifies Python 3 research tools (`arxiv`, `pymupdf` for paper extraction).
-6. Copies commands to `~/.config/opencode/command/` (`/elenchus`, `/crucible`).
+6. Copies commands to `~/.config/opencode/command/` (`/elenchus`, `/crucible`, `/kanon`).
 7. Installs skills and references to `~/.config/opencode/skills/`.
 8. Configures your default research workspace directory.
 
@@ -40,6 +40,7 @@ Other flags: `--help` (full install-flow overview), `--version`.
 
 - `/elenchus <idea>` — Socratic problem space discovery, idea refutation, and graveyard analysis.
 - `/crucible <spec>` — Architectural stress testing, ATAM quality scenarios, and 6-vector stress spikes.
+- `/kanon <brief>` — Strict-IEEE pre-project + sprint-planning docs from Elenchus V1 + Crucible outputs, generic MCP export.
 
 
 ## Decoupled Cross-Session Workflow
@@ -51,6 +52,14 @@ You can run `/elenchus` in one chat session, export `ELENCHUS_DISCOVERY.md`, and
 ```
 
 Crucible automatically ingests the validated problem, killer assumptions, and graveyard lessons, skipping redundant questions.
+
+Then codify the standard with `/kanon`:
+
+```text
+/kanon ELENCHUS_DISCOVERY.md
+```
+
+Kanon turns the tightened Elenchus V1 brief plus Crucible PR/FAQ+RFC+ADRs into strict-IEEE SRS, SDD, test plan, charter + registers, carry-through, sprint pack, and a generic MCP export.
 
 ## Prerequisites
 
