@@ -2,6 +2,14 @@
 
 Eliminating the "Status Code 0" Fallacy through adversarial, boundary-breaking empirical microbenchmarks.
 
+**Threshold status: every numeric gate in this file is PROVISIONAL pending smoke-check calibration (todo-15). Do NOT soften thresholds without L1 fatal reclassification per `technical-feasibility-matrix.md`.**
+
+### Tiered numeric gates (pick by reversibility)
+
+- **Low (reversible):** 10-coroutine smoke + 500-iteration RSS check + corrupt-payload rejection.
+- **Standard (module boundary / new dep):** 50+ coroutines; RSS monotonicity over 1k–10k iterations with leak-profile verdict; 200ms jitter + 429 + socket drops; malformed/boundary corpus rejection 100%; 10x-ingress saturation curve to collapse + shedding point; mutation inversion gate (harness MUST fail on corrupted code).
+- **Irreversible (data-loss / protocol / security):** 200+ coroutines + sustained soak + full fault matrix.
+
 ---
 
 ## 1. The "Status Code 0" Fallacy
@@ -43,23 +51,23 @@ Every spike evaluating an architectural dependency or interface must execute all
 ```
 
 1. **High Concurrency & Contention:**
-   - Execute $\ge 50\text{–}100$ parallel coroutines or threads competing for the same client pool, channel, or database transaction.
+   - Execute $\ge 50\text{–}100$ parallel coroutines or threads competing for the same client pool, channel, or database transaction (Standard tier minimum: 50+ coroutines).
    - Target: Measure lock contention, thread starvation, connection pool exhaustion, and deadlock probability.
 2. **Memory Monotonicity & RSS Profiling:**
    - Execute $1,000\text{–}10,000$ operations in a continuous loop while sampling process Resident Set Size (RSS).
-   - Target: Monotonic memory growth $>5\%$ across steady-state iterations triggers an automatic memory leak failure.
+   - Target: Monotonic memory growth $>5\%$ across steady-state iterations triggers an automatic memory leak failure. Kill-gate: RSS growth > 5% → KILL.
 3. **Adversarial Fault Injection:**
-   - Inject 200ms network jitter, random socket disconnects, and simulated HTTP 429 rate limits.
+   - Inject 200ms jitter, random socket disconnects, and simulated HTTP 429 rate limits.
    - Target: Verify that exponential backoff with full jitter functions correctly and context cancellations propagate without leaking goroutines/threads.
 4. **Boundary & Malformed Payloads:**
    - Inject null bytes (`\x00`), 10MB payloads when 10KB is expected, circular references, truncated JSON, and SQL injection strings.
    - Target: Confirm safe schema rejection without unhandled exceptions or process panics.
 5. **Backpressure & Queue Saturation:**
    - Produce messages at $10\times$ consumer processing capacity for 10 seconds.
-   - Target: Verify deterministic drop-tail, load shedding, or caller-runs backpressure rather than Out-Of-Memory (OOM) crashes.
+   - Target: Verify deterministic drop-tail, load shedding, or caller-runs backpressure rather than Out-Of-Memory (OOM) crashes. Kill-gate: 10x-ingress OOM without shedding → KILL/PIVOT.
 6. **The Mutation Inversion Gate:**
    - Deliberately mutate the code under test (e.g., corrupt authentication tokens, pass invalid connection strings, or flip boolean logic).
-   - Target: **The verification harness MUST fail.** If the test suite passes on intentionally corrupted code, the spike is vacuous and rejected.
+   - Target: **The verification harness MUST fail.** If the test suite passes on intentionally corrupted code, the spike is vacuous and rejected. This mutation inversion gate is non-negotiable: a harness that cannot detect sabotage proves nothing.
 
 ---
 
@@ -165,10 +173,12 @@ if __name__ == "__main__":
 
 ## 4. Spike Lifecycle & Rules of Engagement
 
-1. **Quarantine:** All spike code lives in a throwaway branch or dedicated scratch directory (`spike/`).
+1. **Quarantine:** All spike code lives in a throwaway branch or dedicated scratch directory (`spike/`). Spike code never leaves `spike/` quarantine.
 2. **Zero Production Merging:** Spike code is **strictly prohibited from merging into `main`**. The "Prototype Trap" (converting a quick hack into production code) is a primary source of technical debt.
-3. **Hard Timebox:** Spikes must conclude within **24–48 hours** (or a defined agent step budget).
-4. **Deliverable:** The only surviving deliverable of a spike is an **Architecture Decision Record (ADR)** in `DECISIONS.md` documenting:
+3. **Hard Timebox:** Spikes must conclude within **24–48 hours** (or a defined agent step budget). Agent wall-clock: ≤30 min total, ≤10 min per vector.
+4. **Kill-gates (automatic):** RSS growth > 5% → KILL; harness passing on corrupted code → spike rejected as vacuous; 10x-ingress OOM without shedding → KILL/PIVOT. "Status Code 0" happy-path scripts with no fault vectors are rejected as anti-toy violations.
+5. **Harness docs:** spike-runner SHOULD consult official harness API docs via context7_query-docs and log the library IDs used.
+6. **Deliverable:** The only surviving deliverable of a spike is an **Architecture Decision Record (ADR)** in `DECISIONS.md` documenting:
    - Specific killer assumption tested.
    - Exact benchmark measurements (p99 latency, memory growth, error rate).
-   - Verdict: `FEASIBLE`, `KILL`, or `PIVOT`.
+   - Verdict: `FEASIBLE`, `KILL`, or `PIVOT`, plus saved engineering cost.

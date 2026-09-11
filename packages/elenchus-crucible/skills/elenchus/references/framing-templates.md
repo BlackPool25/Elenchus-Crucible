@@ -22,6 +22,15 @@ Canonical templates for problem framing, validation, and prior-art graveyard ana
 - **Info to Gather:** Explicit knowledge questions delegated to `crucible`.
 - **Constraints:** Quantitative ceilings on time, budget, operational skill, compliance, platform.
 - **Measurable Outcome Criteria:** Units + Direction + Magnitude (*e.g., cut complaint-resolution median from 6 days to 2*). **No framing card advances without this.**
+- **Taken-for-granted:** The belief the human treats as too obvious to state (the unknown known). Name one per card; probe it before framing.
+- **System-in-action context:** Where and how the work actually happens (observed practice, not the documented process). Cite at least one observation.
+- **Do-not-digitalize:** The part of the practice that must stay human/manual. Name it explicitly or write "none — all steps digitizable".
+- **Stakeholder x technique coverage:** Check every cell that applies, note explicit gaps: stakeholders [users | economic buyers | blockers | saboteurs] x techniques [interview | observation | workshop | workaround-costing]. Uncovered cells are delegated to `crucible` or marked out of scope.
+- **Solved-shape metrics (all four, thresholds enforced):**
+  1. tacit-probe yield >= 2/interview
+  2. observation-grounding >= 1/opportunity
+  3. Ulwick opportunity score per opportunity (I/S 1-10, ship threshold 10)
+  4. assumption coverage 100% top-3
 
 ---
 
@@ -30,6 +39,7 @@ Canonical templates for problem framing, validation, and prior-art graveyard ana
 - **Needs Statement:** Articulates the problem and what outcome change resolves it.
 - **HMW Generator:** *"HMW [verb] [user] [need] [context]?"*
 - Rule: Generate 3+ HMWs per POV; retain the two that provoke creative or architectural tension.
+- **HMW scope check:** Kill or split HMWs that fail either bound: too big for 5min (no falsifying test exists that fits a 5-minute probe) or too small for 5yr (winning it changes nothing worth keeping for 5 years).
 
 ---
 
@@ -40,6 +50,8 @@ Ask in order; kill immediately upon failure (record the kill in `DECISIONS.md`):
 2. Who wants it **NOW** so urgently they would use an ugly, buggy v1 built by strangers? (Name concrete groups).
 3. What founder/builder insight do you have that incumbents and consensus currently miss?
 4. Starting from an analogy (*"Uber for X"*)? Rewrite problem-first or kill.
+
+**Hard kill gate:** All four questions are blocking. Any NO is a KILL, not a "revisit later". Record the kill in `DECISIONS.md` before any divergence work starts.
 
 ---
 
@@ -75,6 +87,8 @@ For every candidate surviving the SISP check:
 ```
 Attach the user's current workaround and the exact cost of that workaround (time, money, cognitive load).
 
+**CN-lint checklist (per need statement):** [ ] Solution-free (no implementation words) [ ] Right altitude (benefit, not attribute) [ ] Separated from opinion/target (need, not praise or goal). Fails any check: rewrite before scoring.
+
 ---
 
 ## 7. Opportunity-Solution Tree (ASCII, per Pick)
@@ -88,6 +102,8 @@ Outcome: <Measurable change, e.g., Reduce p99 ingestion latency to <50ms>
     └── Solution Sketch B1 → Killer Assumption: <...>
 ```
 One outcome at top, 2–4 opportunities, sketches mapped under chosen opportunity. Killer assumptions feed the spike queue in `crucible`.
+
+**Per-solution assumption rows (one row per sketch):** `depends-on assumptions → cheapest falsifying test → pivot/persevere bar`. Name the dependency, the single cheapest test that could kill it, and the numeric bar that decides pivot vs persevere.
 
 ---
 

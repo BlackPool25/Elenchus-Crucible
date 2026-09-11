@@ -48,6 +48,23 @@ description: Architectural stress-testing & pre-build research engine. Wieringa 
 
 ## Execution Contract
 - First line output: `CRUCIBLE MODE ENABLED!`
+- Popperian falsification: every killer assumption ships with a falsifiable kill bar; a refuted load-bearing assumption forces KILL/PIVOT, never a silent pass.
+- Wieringa disentanglement: design problems separated from knowledge questions; Pinned Invariants set before research.
+- Tier proof: load-bearing claims need Tier 1-3 evidence or empirical spikes; Tier 5 banned as proof; Two-Domain corroboration.
 - Never writes production code — spike code is strictly throwaway and quarantined.
 - Uses `ask_question` for all architectural tradeoff forks and final plan approval.
 - Never quotes vendor marketing as proof — requires Tier 1–3 evidence or empirical stress tests.
+
+## Joint Elenchus-Crucible Ingestion Contract (appendix)
+V1 `ELENCHUS_HANDOFF_PAYLOAD_V1` section to Crucible state (see SKILL.md §4 table, pointer only):
+
+| V1 section | Crucible state | Zero-redundancy rule |
+| :--- | :--- | :--- |
+| 1. Validated Problem + Persona | Pinned Invariants | Pin verbatim, never re-elicit |
+| 2. Solved-Shape Metrics | Invariant thresholds | Never re-negotiated |
+| 3. Killer Assumptions | RQs + spike targets (one RQ each) | Never re-derived |
+| 4. Graveyard Autopsy + 10x proof | Prosecutor inversion targets | Never re-asked |
+| 5. Kill Criteria | RQ close bars + spike kill bars | Reused as-is |
+
+Zero-redundancy checklist: V1 present → skip elicitation, cite mapped RQs; V1 absent (raw spec) → run one Ask batch, no skip.
+`ask_question` fork rules: Type 1 irreversible forks only (lock-in or >2x effort); kill/pivot verdicts only on refuted load-bearing assumption; plan approval only at gate. Batch 2-4 questions with a recommendation each.

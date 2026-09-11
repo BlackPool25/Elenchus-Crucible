@@ -394,19 +394,43 @@ test('download_paper.py --help executes successfully', () => {
   assert.ok(r.stdout.includes('arXiv'), 'should include arXiv in help text');
 });
 
-test('install.js uses correct oh-my-openagent flags', () => {
+test('install.js uses correct oh-my-openagent flags (stable + beta channels)', () => {
   const content = fs.readFileSync(INSTALL_JS, 'utf-8');
-  const execMatch = content.match(/execSync\(\s*['"]([^"']+oh-my-openagent[^"']+)['"]/);
-  assert.ok(execMatch, 'should have execSync call with oh-my-openagent install');
-  const cmd = execMatch[1];
-  assert.ok(!cmd.includes('--yes'), 'should NOT use --yes flag');
-  assert.ok(cmd.includes('--no-tui'), 'must use --no-tui');
-  assert.ok(cmd.includes('--platform=opencode'), 'must specify platform=opencode');
-  assert.ok(cmd.includes('--claude=no'), 'must pass --claude=no');
-  assert.ok(cmd.includes('--gemini=no'), 'must pass --gemini=no');
-  assert.ok(cmd.includes('--copilot=no'), 'must pass --copilot=no');
-  assert.ok(!cmd.includes('2>/dev/null'), 'should NOT mask installer errors');
-  assert.ok(cmd.startsWith('npx -y oh-my-openagent@latest install'), 'should use npx');
+  const cmds = [...content.matchAll(/execSync\(\s*['"]([^"']*oh-my-openagent[^"']*)['"]/g)].map(
+    (m) => m[1],
+  );
+  const expected = [
+    'npx -y oh-my-openagent@latest install',
+    'npx -y oh-my-openagent@beta install',
+  ];
+  for (const prefix of expected) {
+    const cmd = cmds.find((c) => c.startsWith(prefix));
+    assert.ok(cmd, `missing installer command for: ${prefix}`);
+    assert.ok(!cmd.includes('--yes'), 'should NOT use --yes flag');
+    assert.ok(cmd.includes('--no-tui'), 'must use --no-tui');
+    assert.ok(cmd.includes('--platform=opencode'), 'must specify platform=opencode');
+    assert.ok(cmd.includes('--claude=no'), 'must pass --claude=no');
+    assert.ok(cmd.includes('--gemini=no'), 'must pass --gemini=no');
+    assert.ok(cmd.includes('--copilot=no'), 'must pass --copilot=no');
+    assert.ok(!cmd.includes('2>/dev/null'), 'should NOT mask installer errors');
+    assert.ok(cmd.startsWith('npx '), 'should use npx');
+  }
+});
+
+test('install.js asks first before touching an existing omo install', () => {
+  const content = fs.readFileSync(INSTALL_JS, 'utf-8');
+  assert.ok(
+    content.includes('What should the installer do?'),
+    'should prompt keep / stable / beta / skip when omo exists',
+  );
+  assert.ok(
+    content.includes('keeping existing install untouched'),
+    '--yes mode should keep an existing omo install untouched',
+  );
+  assert.ok(
+    content.includes('oh-my-openagent@beta'),
+    'should support the beta channel explicitly',
+  );
 });
 
 // ============================================================

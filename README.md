@@ -1,7 +1,7 @@
 # Elenchus & Crucible
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.2-cb3837.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/elenchus-crucible"><img src="https://img.shields.io/badge/npm-v1.0.3-cb3837.svg" alt="npm"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
   <a href="https://opencode.ai"><img src="https://img.shields.io/badge/OpenCode-Ready-black.svg" alt="OpenCode"></a>
   <a href="https://github.com/BlackPool25/OmniLearn"><img src="https://img.shields.io/badge/oMo-Sisyphus%20Orchestration-8A2BE2.svg" alt="oMo"></a>
@@ -122,7 +122,7 @@ Both skills use interactive multiple-choice modals for key decisions:
 ## Prerequisites
 
 - **OpenCode** — `curl -fsSL https://opencode.ai/install | bash` (or installed automatically by `npx elenchus-crucible`)
-- **oh-my-openagent** — `npx oh-my-openagent@latest install` (multi-agent orchestration; installed automatically)
+- **oh-my-openagent** (stable or beta) — installed automatically if missing; an existing install of any channel is detected first and never overwritten without asking (`--yes` keeps it untouched)
 - **Node.js >= 18**
 - **Python 3 with arXiv & PyMuPDF** — `uv pip install --system arxiv pymupdf` (verified during setup)
 
@@ -146,9 +146,9 @@ npx elenchus-crucible --yes
 
 The installer:
 1. Verifies OpenCode installation (with supply-chain approval prompts for remote scripts).
-2. Configures **Context7 MCP** for real-time documentation retrieval.
+2. Configures **Context7 MCP** in local mode (`npx -y @upstash/context7-mcp`) for real-time documentation retrieval.
 3. Configures **SearXNG MCP** for deep technical & academic searches.
-4. Ensures **oh-my-openagent** is registered for multi-agent Sisyphus orchestration.
+4. Ensures **oh-my-openagent** is registered for multi-agent Sisyphus orchestration (ask-first: existing stable/beta installs are kept unless you choose otherwise).
 5. Verifies Python 3 research tools (`arxiv`, `pymupdf`).
 6. Copies commands to `~/.config/opencode/command/`.
 7. Installs skills and references to `~/.config/opencode/skills/`.

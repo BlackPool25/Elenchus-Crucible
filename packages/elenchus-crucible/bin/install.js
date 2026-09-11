@@ -196,9 +196,9 @@ function printHelp() {
       '',
       `${pc.bold('What this does:')}`,
       `  1. Verifies OpenCode is installed (prompts to install if missing)`,
-      `  2. Configures Context7 MCP (remote documentation lookups)`,
+      `  2. Configures Context7 MCP (local docs lookup via @upstash/context7-mcp)`,
       `  3. Configures SearXNG MCP (academic and deep tech search)`,
-      `  4. Ensures oh-my-openagent is installed (Sisyphus orchestration)`,
+      `  4. Ensures oh-my-openagent is installed (asks first if any install exists — never overwrites a beta with stable; --yes keeps existing untouched)`,
       `  5. Verifies Python 3 research tools (arxiv, pymupdf for paper extraction)`,
       `  6. Copies commands to ~/.config/opencode/command/ (/elenchus, /crucible)`,
       `  7. Installs skills and references to ~/.config/opencode/skills/`,
@@ -250,13 +250,56 @@ function isSearXNGConfigured(config) {
   );
 }
 
+function pluginEntryText(p) {
+  if (typeof p === 'string') return p;
+  if (Array.isArray(p)) return p.filter((x) => typeof x === 'string').join(' ');
+  return '';
+}
+
+function isOmoPluginEntry(p) {
+  const t = pluginEntryText(p).toLowerCase();
+  if (!t) return false;
+  return (
+    t.includes('oh-my-openagent') ||
+    t.includes('oh-my-opencode') ||
+    t.includes('oh-my-ohmy') ||
+    /(^|[^a-z])omo([^a-z]|$)/.test(t)
+  );
+}
+
 function isOhMyOpenAgentInstalled(config) {
   if (!config?.plugin) return false;
-  return config.plugin.some(
-    (p) =>
-      p.toLowerCase().includes('oh-my-openagent') ||
-      p.toLowerCase().includes('oh-my-opencode'),
-  );
+  return config.plugin.some(isOmoPluginEntry);
+}
+
+/**
+ * Detect an existing oh-my-openagent/omo install of ANY channel.
+ * Returns { found, entry, channel, binaryVersion } where channel is
+ * 'beta' | 'stable' | 'unknown'. Never returns a default that implies
+ * a fresh install — callers must ask before touching an existing setup.
+ */
+function detectOmoInstall(config) {
+  let entry = null;
+  if (config?.plugin) {
+    entry = config.plugin.find(isOmoPluginEntry) ?? null;
+  }
+  let binaryVersion = null;
+  try {
+    const probed = spawnSync('omo', ['--version'], {
+      encoding: 'utf-8',
+      timeout: 10000,
+      stdio: 'pipe',
+    });
+    if (probed.status === 0 && probed.stdout) binaryVersion = probed.stdout.trim();
+  } catch {
+    binaryVersion = null;
+  }
+  if (!entry && !binaryVersion) {
+    return { found: false, entry: null, channel: 'unknown', binaryVersion: null };
+  }
+  const haystack = `${entry ? pluginEntryText(entry) : ''} ${binaryVersion || ''}`.toLowerCase();
+  const channel = haystack.includes('beta') ? 'beta' : entry ? 'stable' : 'unknown';
+  return { found: true, entry, channel, binaryVersion };
 }
 
 function checkPythonTools() {
@@ -369,13 +412,13 @@ async function installOpenCode(autoYes) {
   }
 }
 
-async function setupContext7MCP(configInfo) {
+async function setupContext7MCP(configInfo, autoYes = false) {
   const { path: configPath, data: config, isJSONC } = configInfo;
 
   if (!configPath || !config) {
     log.warn('OpenCode config file not found — cannot auto-configure Context7 MCP.');
     log.info('Add it manually to opencode.json under the "mcp" key:');
-    log.info(`  ${pc.dim('See: https://opencode.ai/docs/mcp-servers/#context7')}`);
+    log.info(`  ${pc.dim('See: https://context7.com/docs/clients/opencode')}`);
     return false;
   }
 
@@ -388,14 +431,17 @@ async function setupContext7MCP(configInfo) {
     return true;
   }
 
-  const shouldSetup = await confirm({
-    message:
-      'Context7 MCP not configured. Crucible uses it for live documentation lookup. Set it up now?',
-    initialValue: true,
-  });
-  if (isCancel(shouldSetup)) {
-    cancel('Installation cancelled');
-    process.exit(0);
+  let shouldSetup = autoYes;
+  if (!autoYes) {
+    shouldSetup = await confirm({
+      message:
+        'Context7 MCP not configured. Crucible uses it for live documentation lookup. Set it up now?',
+      initialValue: true,
+    });
+    if (isCancel(shouldSetup)) {
+      cancel('Installation cancelled');
+      process.exit(0);
+    }
   }
   if (!shouldSetup) {
     log.info('Skipping Context7 setup.');
@@ -403,16 +449,19 @@ async function setupContext7MCP(configInfo) {
   }
 
   const s = createSpinner();
-  s.start('Configuring Context7 MCP (remote mode)...');
+  s.start('Configuring Context7 MCP (local mode)...');
   try {
     if (!config.mcp) config.mcp = {};
+    // Current Context7 format for OpenCode (2026): local stdio via the
+    // @upstash/context7-mcp package. API key is optional — without one the
+    // server works with default rate limits; export CONTEXT7_API_KEY for more.
     config.mcp.context7 = {
-      type: 'remote',
-      url: 'https://mcp.context7.com/mcp',
+      type: 'local',
+      command: ['npx', '-y', '@upstash/context7-mcp'],
       enabled: true,
     };
     writeOpenCodeConfigSafe(configPath, config, isJSONC);
-    s.stop('Context7 MCP configured (remote mode)');
+    s.stop('Context7 MCP configured (local mode)');
     log.success('Context7 documentation MCP is now enabled in OpenCode');
     return true;
   } catch (err) {
@@ -486,10 +535,35 @@ async function setupSearXNGMCP(configInfo, autoYes) {
 
 async function ensureOhMyOpenAgent(configInfo, autoYes) {
   const { path: configPath, data: config, isJSONC } = configInfo;
+  const detected = detectOmoInstall(config);
 
-  if (config && isOhMyOpenAgentInstalled(config)) {
-    log.success('oh-my-openagent plugin is registered in OpenCode');
-    return true;
+  // Ask-first: never force-install over an existing setup of ANY channel.
+  if (detected.found) {
+    const where = [];
+    if (detected.entry) where.push(`plugin entry "${pluginEntryText(detected.entry)}"`);
+    if (detected.binaryVersion) where.push(`omo binary (${detected.binaryVersion})`);
+    if (autoYes) {
+      log.success(`oh-my-openagent already installed (${where.join(' + ')}, channel: ${detected.channel}) — keeping existing install untouched`);
+      return true;
+    }
+    const choice = await select({
+      message: `oh-my-openagent already installed (${where.join(' + ')}, channel: ${detected.channel}). What should the installer do?`,
+      options: [
+        { value: 'keep', label: 'Keep existing install (recommended)' },
+        { value: 'stable', label: 'Reinstall stable channel (oh-my-openagent@latest)' },
+        { value: 'beta', label: 'Install beta channel (oh-my-openagent@beta)' },
+        { value: 'skip', label: 'Skip oh-my-openagent setup' },
+      ],
+    });
+    if (isCancel(choice)) {
+      cancel('Installation cancelled');
+      process.exit(0);
+    }
+    if (choice === 'keep' || choice === 'skip') {
+      log.info('Keeping existing oh-my-openagent install untouched.');
+      return true;
+    }
+    return runOmoInstaller(choice, configPath);
   }
 
   let shouldInstall = autoYes;
@@ -512,18 +586,39 @@ async function ensureOhMyOpenAgent(configInfo, autoYes) {
     return false;
   }
 
+  return runOmoInstaller('stable', configPath);
+}
+
+/**
+ * Run the oh-my-openagent installer for the chosen channel.
+ * channel is 'stable' (oh-my-openagent@latest) or 'beta' (oh-my-openagent@beta).
+ */
+async function runOmoInstaller(channel, configPath) {
+  const tag = channel === 'beta' ? 'oh-my-openagent@beta' : 'oh-my-openagent@latest';
   const sp = createSpinner();
-  sp.start('Running oh-my-openagent installer...');
+  sp.start(`Running oh-my-openagent installer (${channel} channel)...`);
   try {
-    execSync(
-      'npx -y oh-my-openagent@latest install --no-tui --platform=opencode --claude=no --openai=no --gemini=no --copilot=no --skip-auth',
-      {
-        stdio: 'inherit',
-        timeout: 180000,
-        maxBuffer: 10 * 1024 * 1024,
-      },
-    );
-    sp.stop('oh-my-openagent installed');
+    // Keep literals (test pins flags via string match).
+    if (channel === 'beta') {
+      execSync(
+        'npx -y oh-my-openagent@beta install --no-tui --platform=opencode --claude=no --openai=no --gemini=no --copilot=no --skip-auth',
+        {
+          stdio: 'inherit',
+          timeout: 180000,
+          maxBuffer: 10 * 1024 * 1024,
+        },
+      );
+    } else {
+      execSync(
+        'npx -y oh-my-openagent@latest install --no-tui --platform=opencode --claude=no --openai=no --gemini=no --copilot=no --skip-auth',
+        {
+          stdio: 'inherit',
+          timeout: 180000,
+          maxBuffer: 10 * 1024 * 1024,
+        },
+      );
+    }
+    sp.stop(`oh-my-openagent installed (${channel} channel)`);
 
     const refreshed = readOpenCodeConfigSafe();
     if (refreshed.data && !isOhMyOpenAgentInstalled(refreshed.data)) {
@@ -539,7 +634,7 @@ async function ensureOhMyOpenAgent(configInfo, autoYes) {
     sp.stop('oh-my-openagent install failed');
     log.warn('Could not complete non-interactive oh-my-openagent installation.');
     log.info('Run it manually in an interactive terminal:');
-    log.info(`  ${pc.cyan('npx oh-my-openagent@latest install')}`);
+    log.info(`  ${pc.cyan(`npx ${tag} install`)}`);
     return false;
   }
 }
@@ -895,7 +990,7 @@ async function install(autoYes = false) {
   // ── Step 2: Context7 MCP ──
   log.step('2/8  Configuring Context7 MCP (documentation lookups)');
   const configInfo = readOpenCodeConfigSafe();
-  await setupContext7MCP(configInfo);
+  await setupContext7MCP(configInfo, autoYes);
 
   // ── Step 3: SearXNG MCP ──
   log.step('3/8  Configuring SearXNG MCP (academic & deep search)');

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-09-11
+
+### Fixed
+- **oh-my-openagent beta-aware ask-first install**:
+  - Installer now detects an existing oh-my-openagent/omo install of ANY channel before doing anything — config plugin entries in any form (`oh-my-openagent`, `oh-my-opencode`, `oh-my-ohmy`, bare `omo`, `@beta` tags) plus the `omo` binary (`omo --version`).
+  - When an install is found, the installer reports the version/channel and asks: keep existing (recommended) / reinstall stable (`oh-my-openagent@latest`) / install beta (`oh-my-openagent@beta`) / skip. Never force-installs stable over a beta.
+  - Under `--yes`, an existing install is kept untouched (logged with reason); only fresh installs default to the stable channel.
+- **Context7 MCP current format**: installer now writes the documented 2026 OpenCode shape — local stdio via `npx -y @upstash/context7-mcp` — instead of the stale remote `type/url` block. API key remains optional (`CONTEXT7_API_KEY` for higher limits). `--yes` mode no longer hangs on the Context7 prompt on fresh machines.
+
+### Changed
+- Synced packaged `skills/elenchus`, `skills/crucible`, and `commands/` to the reviewed 2026-09-11 live content (elenchus §§5-9 + graveyard/V1 handoff, framing-templates, ideation-methods, crucible §§4-8, stress-spike-protocol, both command mirrors).
+- Package README now documents the full install flow (`--yes`/`--check`, what gets installed, omo beta handling, Context7/SearXNG/Python prereqs, `download-paper` usage).
+
+---
+
 ## [1.0.2] - 2026-09-09
 
 ### Added

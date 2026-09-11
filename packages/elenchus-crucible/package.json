@@ -1,6 +1,6 @@
 {
   "name": "elenchus-crucible",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Elenchus & Crucible \u2014 Socratic problem discovery & architectural stress-testing engine for OpenCode and Oh My OpenAgent. Multi-agent research with Kitchenham-light SLRs, Search Inversion Matrix, ATAM quality scenarios, and 6-vector stress spikes.",
   "keywords": [
     "opencode",
@@ -26,7 +26,9 @@
     "bin/",
     "commands/",
     "skills/",
-    "scripts/"
+    "scripts/",
+    "!**/__pycache__/**",
+    "!**/*.pyc"
   ],
   "repository": {
     "type": "git",
